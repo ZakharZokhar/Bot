@@ -1,10 +1,12 @@
 const fetch = require('cross-fetch');
+const { parse } = require('node-html-parser');
 const memes = require("random-memes");
-const { Client, Events, GatewayIntentBits } = require('discord.js');
+const google = require('googlethis');
+const { Client, Events, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const { token } = require('./config.json');
 
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages ] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages,] });
 
 const fuckYou = ['Пошел нахуй!', 'Смешнее только про твою маму', 'Это твое мнение', 'Кто ж виноват, что у тебя нет чувства юмора'];
 // Внимание, анекдот!
@@ -65,6 +67,48 @@ function meme(msg) {
     });
 }
 
+//Фильм
+function film(msg) {
+    fetch("https://www.kinopoisk.ru/chance/?item=true")
+    .then(res => {
+        if (res.status >= 400) {
+            throw new Error("Bad response from server");
+        }
+        return res.json();
+    })
+    .then(async film => {
+        const root = parse(film);
+        const nameRaw = root.querySelector('.filmName a').textContent;
+		const name = nameRaw.replace(/&nbsp;/g, ' ');
+        const yearRaw = root.querySelector('.filmName span').textContent;
+		const year = yearRaw.match(/\(\d{4}\)/)[0].slice(1, -1);
+        const rating =
+			Math.round(Number(root.querySelector('.WidgetStars').getAttribute('value')) * 10) / 10;
+        let images;
+        try {
+            images = await google.image(name + ' ' + year + ' год', { safe: false });
+        } catch {
+            images = [];
+        }
+
+        const exampleEmbed = new EmbedBuilder()
+	.setColor(0x0099FF)
+	.setTitle(name)
+	.addFields(
+		{ name: 'Рейтинг', value: rating.toString() },
+        { name: 'Год', value: year.toString() },
+	)
+	.setImage(images[0].url)
+	.setTimestamp()
+
+    msg.channel.send({ embeds: [exampleEmbed] });
+    })
+    .catch(err => {
+        console.error(err);
+    });
+}
+
+
 client.on('messageCreate', (message) => {
     if (message.author.bot) return;
 
@@ -81,6 +125,9 @@ client.on('messageCreate', (message) => {
             break;
         case 'Хочу мем':
             meme(message);
+            break;
+        case 'Что сегодня смотрим?':
+            film(message);
             break;
 
     }
