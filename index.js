@@ -1,4 +1,5 @@
 const fetch = require('cross-fetch');
+const https = require('https');
 const { parse } = require('node-html-parser');
 const memes = require("random-memes");
 const google = require('googlethis');
@@ -150,6 +151,39 @@ function ingredients(ingArray) {
     return str;
 }
 
+function anime(msg) {
+    fetch("https://animechan.vercel.app/api/random")
+    .then(res => {
+        if (res.status >= 400) {
+            throw new Error("Bad response from server");
+        }
+        return res.json();
+    })
+    .then(async anime => {
+        let images;
+        try {
+            images = await google.image(anime.anime + ' аниме', { safe: false });
+        } catch {
+            images = [];
+        }
+
+        const exampleEmbed = new EmbedBuilder()
+	.setColor(0x0099FF)
+	.setTitle(anime.anime)
+	.addFields(
+		{ name: 'Quote', value: anime.quote },
+	)
+	.setImage(images[0].url)
+	.setTimestamp()
+
+    msg.channel.send({ embeds: [exampleEmbed] });
+    })
+    .catch(err => {
+        console.error(err);
+    });
+}
+
+
 
 client.on('messageCreate', (message) => {
     if (message.author.bot) return;
@@ -174,6 +208,17 @@ client.on('messageCreate', (message) => {
         case 'Что сегодня выпить?':
             cocktail(message);
             break;
+        case 'Посоветуйте аниме новичку':
+            if (Math.random() > 0.9) {
+                message.channel.send('твое имя');
+            } else {
+                anime(message);
+            }
+            break;
+        case 'антон':
+            message.channel.send('а?\nче звал ' + message.author.username +'?');
+            break;
+    
 
     }
 })
