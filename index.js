@@ -9,6 +9,7 @@ const { token } = require('./config.json');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages,] });
 
 const fuckYou = ['Пошел нахуй!', 'Смешнее только про твою маму', 'Это твое мнение', 'Кто ж виноват, что у тебя нет чувства юмора'];
+
 // Внимание, анекдот!
 function joke(msg) {
     fetch("https://v2.jokeapi.dev/joke/Any")
@@ -108,6 +109,47 @@ function film(msg) {
     });
 }
 
+//Коктейль
+function cocktail(msg) {
+    fetch("https://www.thecocktaildb.com/api/json/v1/1/random.php")
+    .then(res => {
+        if (res.status >= 400) {
+            throw new Error("Bad response from server");
+        }
+        return res.json();
+    })
+    .then(async cocktail => {
+        const exampleEmbed = new EmbedBuilder()
+	.setColor(0x0099FF)
+	.setTitle(cocktail.drinks[0].strDrink)
+	.addFields(
+		{ name: 'Ingredients', value: ingredients([cocktail.drinks[0].strIngredient1, cocktail.drinks[0].strIngredient2, cocktail.drinks[0].strIngredient3,
+            cocktail.drinks[0].strIngredient4, cocktail.drinks[0].strIngredient5, cocktail.drinks[0].strIngredient6, cocktail.drinks[0].strIngredient7, cocktail.drinks[0].strIngredient8, cocktail.drinks[0].strIngredient9, cocktail.drinks[0].strIngredient10,
+            cocktail.drinks[0].strIngredient11, cocktail.drinks[0].strIngredient12, cocktail.drinks[0].strIngredient13, cocktail.drinks[0].strIngredient14, cocktail.drinks[0].strIngredient15]) },
+        { name: 'Instruction', value: cocktail.drinks[0].strInstructions },
+	)
+	.setImage(cocktail.drinks[0].strDrinkThumb)
+	.setTimestamp()
+
+    msg.channel.send({ embeds: [exampleEmbed] });
+    })
+    .catch(err => {
+        console.error(err);
+    });
+}
+
+function ingredients(ingArray) {
+    let str = ' ';
+    for (let i = 0; i<ingArray.length; i++) {
+        if (ingArray[i] != null) {
+            str += ingArray[i] + ', '
+        } else {
+            break;
+        }
+    }
+    return str;
+}
+
 
 client.on('messageCreate', (message) => {
     if (message.author.bot) return;
@@ -128,6 +170,9 @@ client.on('messageCreate', (message) => {
             break;
         case 'Что сегодня смотрим?':
             film(message);
+            break;
+        case 'Что сегодня выпить?':
+            cocktail(message);
             break;
 
     }
