@@ -1,10 +1,9 @@
 const fetch = require('cross-fetch');
-const https = require('https');
 const { parse } = require('node-html-parser');
 const memes = require("random-memes");
 const google = require('googlethis');
 const { Client, Events, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const { token } = require('./config.json');
+require('dotenv').config();
 
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages,] });
@@ -151,6 +150,7 @@ function ingredients(ingArray) {
     return str;
 }
 
+//Аниме
 function anime(msg) {
     fetch("https://animechan.vercel.app/api/random")
     .then(res => {
@@ -177,6 +177,23 @@ function anime(msg) {
 	.setTimestamp()
 
     msg.channel.send({ embeds: [exampleEmbed] });
+    })
+    .catch(err => {
+        console.error(err);
+    });
+}
+
+//Default
+function bla(msg) {
+    fetch("https://api.quotable.io/random")
+    .then(res => {
+        if (res.status >= 400) {
+            throw new Error("Bad response from server");
+        }
+        return res.json();
+    })
+    .then(phrase => {
+        msg.channel.send(phrase.content);
     })
     .catch(err => {
         console.error(err);
@@ -218,8 +235,10 @@ client.on('messageCreate', (message) => {
         case 'антон':
             message.channel.send('а?\nче звал ' + message.author.username +'?');
             break;
-    
-
+        default:
+            if (Math.random() > 0.9) {
+                bla(message);
+            }
     }
 })
 
@@ -227,4 +246,4 @@ client.once(Events.ClientReady, c => {
 	console.log(`Ready! Logged in as ${c.user.tag}`);
 });
 
-client.login(token);
+client.login(process.env.TOKEN_ID);
