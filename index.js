@@ -4,6 +4,15 @@ const memes = require("random-memes");
 const google = require('googlethis');
 const { Client, Events, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 require('dotenv').config();
+const http = require('http');
+
+http.createServer((req, res) => {
+    res.writeHead(200, {
+        'Content-type': 'text/plain'
+    });
+        res.write('Hey');
+        res.end();
+    }).listen(4000);
 
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages,] });
