@@ -213,43 +213,33 @@ function bla(msg) {
 
 client.on('messageCreate', (message) => {
     if (message.author.bot) return;
-
-    switch (message.content) {
-        case 'Внимание, анекдот!':
-            joke(message);
-            break;
-        case 'Так не смешно же':
-        case 'A посмешнее ничего нет?':
-            notFunny(message);
-            break;
-        case 'Дай пожрать':
-            generateCatOrDog(message);
-            break;
-        case 'Хочу мем':
-            meme(message);
-            break;
-        case 'Что сегодня смотрим?':
-            film(message);
-            break;
-        case 'Что сегодня выпить?':
-            cocktail(message);
-            break;
-        case 'Посоветуйте аниме новичку':
-            if (Math.random() > 0.9) {
-                message.channel.send('твое имя');
-            } else {
-                anime(message);
-            }
-            break;
-        case 'антон':
-            message.channel.send('а?\nче звал ' + message.author.username +'?');
-            break;
-        default:
-            if (Math.random() > 0.9) {
-                bla(message);
-            }
+    if (message.content.toLowerCase() == 'внимание, анекдот!') {
+        joke(message);
+    } else if (message.content.toLowerCase() == 'так не смешно же' || message.content.toLowerCase() == 'а посмешнее ничего нет?') {
+        notFunny(message);
+    } else if (message.content.toLowerCase() == 'дай пожрать') {
+        generateCatOrDog(message);
+    } else if (message.content.toLowerCase() == 'хочу мем') {
+        meme(message);
+    } else if (message.content.toLowerCase() == 'что сегодня смотрим?') {
+        film(message);
+    } else if (message.content.toLowerCase() == 'что сегодня выпить?') {
+        cocktail(message);
+    } else if (message.content.toLowerCase() == 'посоветуйте аниме новичку') {
+        if (Math.random() > 0.9) {
+            message.channel.send('твое имя');
+        } else {
+            anime(message);
+        }
+    } else if (message.content.toLowerCase() == 'антон') {
+        message.channel.send('а?\nче звал ' + message.author.username +'?');
+    } else {
+        if (Math.random() > 0.9) {
+            bla(message);
+        }
+    }       
     }
-})
+)
 
 client.once(Events.ClientReady, c => {
 	console.log(`Ready! Logged in as ${c.user.tag}`);
