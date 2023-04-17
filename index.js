@@ -192,6 +192,32 @@ function anime(msg) {
     });
 }
 
+//Пак
+function pack(msg) {
+    fetch('https://sigame.xyz/')
+    .then(resp=> resp.text())
+    .then(body => {
+        root = parse(body);
+        const linkRaw = root.querySelector('.v-list-item__action a');
+        const packCount = linkRaw.rawAttrs.split(' ')[0].split('/')[3];
+        const randomPack = String(getRandomInt(Number(packCount)));
+        
+        const exampleEmbed = new EmbedBuilder()
+        .setColor(0x0099FF)
+        .setImage('https://sun9-29.userapi.com/impg/4TbwL_WMU1MQI9aBcJ_WMdRFHUIP7uJWGQPzPA/iBNa1YmLJA8.jpg?size=128x128&quality=96&sign=3021db8a3626cfc320b28b165df4d5bc&c_uniq_tag=fj96XP4HpPTPwN-5aGvVjU5Dszj-J-5nOfNEvRk2Gag&type=album')
+        .addFields(
+            { name: 'Ссылочка для скачивания', value: 'https://sigame.xyz/api/pack/'+ randomPack + '/download' },
+        )
+        .setTimestamp()
+    
+        msg.channel.send({ embeds: [exampleEmbed] })
+        .catch(err => {
+            console.error(err);
+        });
+    }); 
+    
+}
+
 //Default
 function bla(msg) {
     fetch("https://api.quotable.io/random")
@@ -217,15 +243,15 @@ client.on('messageCreate', (message) => {
         joke(message);
     } else if (message.content.toLowerCase() == 'так не смешно же' || message.content.toLowerCase() == 'а посмешнее ничего нет?') {
         notFunny(message);
-    } else if (message.content.toLowerCase() == 'дай пожрать') {
+    } else if (message.content.toLowerCase().match('^.*кот|пёс.*$') != null) {
         generateCatOrDog(message);
-    } else if (message.content.toLowerCase() == 'хочу мем') {
+    } else if (message.content.toLowerCase().match('^.*мем.*$') != null) {
         meme(message);
-    } else if (message.content.toLowerCase() == 'что сегодня смотрим?') {
+    } else if (message.content.toLowerCase().match('^.*фильм|кино.*$') != null) {
         film(message);
     } else if (message.content.toLowerCase() == 'что сегодня выпить?') {
         cocktail(message);
-    } else if (message.content.toLowerCase() == 'посоветуйте аниме новичку') {
+    } else if (message.content.toLowerCase().match('^.*аниме.*$') != null) {
         if (Math.random() > 0.9) {
             message.channel.send('твое имя');
         } else {
@@ -233,9 +259,15 @@ client.on('messageCreate', (message) => {
         }
     } else if (message.content.toLowerCase() == 'антон') {
         message.channel.send('а?\nче звал ' + message.author.username +'?');
+    } else if (message.content.toLowerCase() == 'го в свою игру') {
+        pack(message);
     } else {
         if (Math.random() > 0.9) {
-            bla(message);
+            if (Math.random() > 0.5) {
+                bla(message);
+            } else {
+                generateCatOrDog(message);
+            }
         }
     }       
     }
@@ -246,3 +278,7 @@ client.once(Events.ClientReady, c => {
 });
 
 client.login(process.env.TOKEN_ID);
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max) + 1;
+  }
