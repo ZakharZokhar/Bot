@@ -261,6 +261,8 @@ client.on('messageCreate', (message) => {
         message.channel.send('а?\nче звал ' + message.author.username +'?');
     } else if (message.content.toLowerCase() == 'го в свою игру') {
         pack(message);
+    } else if (message.content.toLowerCase().match('^.*пруф.*$') != null) {
+        message.channel.send('https://media.discordapp.net/attachments/974946141038845970/1052995710817161316/caption.gif');
     } else {
         if (Math.random() > 0.9) {
             if (Math.random() > 0.5) {
