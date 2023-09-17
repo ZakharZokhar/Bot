@@ -21,7 +21,7 @@ const fuckYou = ['Пошел нахуй!', 'Смешнее только про �
 
 // Внимание, анекдот!
 function joke(msg) {
-    fetch("https://v2.jokeapi.dev/joke/Any")
+    fetch("https://jokesapi.onrender.com/api/randomJoke")
     .then(res => {
         if (res.status >= 400) {
             throw new Error("Bad response from server");
@@ -29,16 +29,18 @@ function joke(msg) {
         return res.json();
     })
     .then(anekdot => {
-        if (anekdot.type == 'single'){
-            msg.channel.send(anekdot.joke );
-        } else {
-            msg.channel.send(anekdot.setup + '\n' + anekdot.delivery);
-        }
-        
+        const exampleEmbed = new EmbedBuilder()
+	.setColor(0x0099FF)
+	.setImage(anekdot.joke.photo)
+    .setDescription(anekdot.joke.text)
+	.setTimestamp()
+
+    msg.channel.send({ embeds: [exampleEmbed] });
     })
     .catch(err => {
         console.error(err);
     });
+        
 }
 
 //Не смешно
